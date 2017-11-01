@@ -13,10 +13,8 @@ rgb_image = cv2.cvtColor(bgr_image, cv2.COLOR_BGR2RGB)
 
 undistorted_image = cv2.undistort(rgb_image, mtx, dist, None, mtx)
 
-kernel = 9
+binary_img = it.s_channel_thresh(rgb_img=undistorted_image, thresh_min=110, thresh_max=255)
 
-binary_img = it.sobel_gray_thresh(rgb_img=undistorted_image, sobel_kernel=kernel, thresh_min=10, thresh_max=100)
-
-plt.title('Sobel x binary image; kernel={}'.format(kernel), fontsize=20)
+plt.title('S channel grayscale image', fontsize=20)
 plt.imshow(binary_img, cmap='gray')
 plt.show()
