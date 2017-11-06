@@ -19,20 +19,23 @@ The goals / steps of this project are the following:
 
 [//]: # (Image References)
 
-[image1]: ./examples/undistort_output.png "Undistorted"
-[image2]: ./test_images/test1.jpg "Road Transformed"
-[image3]: ./examples/binary_combo_example.jpg "Binary Example"
-[image4]: ./examples/warped_straight_lines.jpg "Warp Example"
-[image5]: ./examples/color_fit_lines.jpg "Fit Visual"
-[image6]: ./examples/example_output.jpg "Output"
-[video1]: ./project_video.mp4 "Video"
-
 [image01]: ./camera_calibration/camera_calibration_src_images/calibration1.jpg "distorted chessboard"
 [image02]: ./camera_calibration/camera_calibration_calibrated_images/calibration1.jpg "undistorted chessboard"
 [image03]: ./camera_calibration/camera_calibration_src_images/calibration12.jpg "distorted chessboard"
 [image04]: ./camera_calibration/camera_calibration_calibrated_images/calibration12.jpg "undistorted chessboard"
 [image05]: ./test_images/test1.jpg
 [image06]: ./output_images/0_undistorted_images/test1.png
+[image07]: ./test_images/test4.jpg
+[image08]: ./output_images/0_undistorted_images/test4.png
+[image09]: ./test_images/straight_lines1.jpg
+[image10]: ./output_images/0_undistorted_images/straight_lines1.png
+[image11_gray_test1]: ./output_images/1_threshold_images/grayscale_images/test1.png
+[image12_gray_test4]: ./output_images/1_threshold_images/grayscale_images/test4.png
+[image13_gray_straight_lines1]: ./output_images/1_threshold_images/grayscale_images/straight_lines1.png
+[image14_sobelx_test1]: ./output_images/1_threshold_images/sobel_x_gray/test1.png
+[image15_sobelx_test4]: ./output_images/1_threshold_images/sobel_x_gray/test1.png
+[image16_sobelx_straight_lines1]: ./output_images/1_threshold_images/sobel_x_gray/straight_lines1.png
+
 
 ## [Rubric](https://review.udacity.com/#!/rubrics/571/view) Points
 
@@ -57,8 +60,37 @@ but the image points are from the source image, and the object points are from t
 
 I initialize the object point grid to be the 'ideal' chessboard corner locations.
 
-TO BE CONTINUED...
+My process for adding the object and image points was as follows:
+1) I read the image using the ```cv2.imread(file_name)``` function.
+2) I created a grayscale image from the rgb image using the ```cv2.cvtColor(bgr_image, cv2.COLOR_RGB2GRAY)``` function.
+3) I found the chessboar corners, and whether chessboard corners were found using the following method:
+```
+ret, corners = cv2.findChessboardCorners(image=grayscale_image, patternSize=chessboard_dimensions)
+```
+-Note that ret is a boolean indicating whether corners were successfully found.
+4) If corners were successfully found, I would append the corners to the image_points array
+and append the object point grid to the object points array.  
 
+-Note that these parrallel arrays are 'arrays of arrays'.
+
+-Also note that each element in the object points array is the same object - the 'canonical' grid.
+
+5) Then I would move on to the next file and do it again, until there were no more images.
+6) Once I had collected all of the object and image points, I used the following function to calibrate the camera:
+```
+ret, mtx, dist, rvecs, tvecs = cv2.calibrateCamera(object_points, image_points, grayscale_image.shape[::-1], None, None)
+```
+Of use were the mtx, and dist variables.  These are the camera matrix and distortion coefficients.
+7) I saved these two numpy arrays using the numpy save function:
+```
+np.save(file='saved_data_to_calibrate_images/mtx.npy', arr=mtx)
+np.save(file='saved_data_to_calibrate_images/dist.npy', arr=dist)
+```
+This allowed me to load the camera matrix and distortion coefficients from other programs.
+
+The following code is a complete method of saving the distortion coefficients.
+It can also be found in camera_calibration/calibrator.py.
+A test of this code can be found in camera_calibration/test_undistort.py
 ```python
 import glob
 import numpy as np
@@ -91,38 +123,92 @@ np.save(file='saved_data_to_calibrate_images/mtx.npy', arr=mtx)
 np.save(file='saved_data_to_calibrate_images/dist.npy', arr=dist)
 ```
 
+To undistort and image, I would use the following procedure:
+1) Load the camera matrix and distortion coefficients.
+2) Load the image and do any color channel swapping if necessary (e.g. bgr -> rgb)
+3) use the ```cv2.undistort(rgb_image, mtx, dist, None, mtx)``` method, which returns the undistorted image.
+
+The following code shows an example of undistorting an image.  This code can also be found in camera_calibration/test_undistort.py.
+```
+mtx = np.load('saved_data_to_calibrate_images/mtx.npy')
+dist = np.load('saved_data_to_calibrate_images/dist.npy')
+
+# load in the image files using glob
+bgr_image = cv2.imread('../test_images/test1.jpg')
+rgb_image = cv2.cvtColor(bgr_image, cv2.COLOR_BGR2RGB)
+
+undistorted_image = cv2.undistort(rgb_image, mtx, dist, None, mtx)
+```
+
+#### 1. Provide an example of a distortion-corrected image.
+The following are some examples of undistorted images.
 ##### Source File: camera_calibration/camera_calibration_src_images/calibration1.jpg
-Distorted Image             |  Undistorded Image
+Distorted Image             |  Undistorted Image
 :-------------------------:|:-------------------------:
 ![alt text][image01]  |  ![alt text][image02]
 
 ##### Source File: camera_calibration/camera_calibration_src_images/calibration12.jpg
-Distorted Image             |  Undistorded Image
+Distorted Image             |  Undistorted Image
 :-------------------------:|:-------------------------:
 ![alt text][image03]  |  ![alt text][image04]
 
 ##### Source File: output_images/0_undistorted_images/test1.png
-Distorted Image             |  Undistorded Image
+Distorted Image (test1.jpg)             |  Undistorted Image
 :-------------------------:|:-------------------------:
 ![alt text][image05]  |  ![alt text][image06]
+
 ### Pipeline (single images)
 
-#### 1. Provide an example of a distortion-corrected image.
+In the begining of my pipeline, I undistort and image.  
+Throughout the pipeline description, I will be using the test1.jpg, test4.jpg, and straight_lines1.jpg images.
+Here is an example of it being undistorted: (same as above)
+##### Source File: output_images/0_undistorted_images/test1.png
+Distorted Image (test1.jpg)             |  Undistorted Image (test1.jpg)
+:-------------------------:|:-------------------------:
+![alt text][image05]  |  ![alt text][image06]
 
-To demonstrate this step, I will describe how I apply the distortion correction to one of the test images like this one:
-![alt text][image2]
+Distorted Image (test4.jpg)             |  Undistorted Image (test4.jpg)
+:-------------------------:|:-------------------------:
+![alt text][image07]  |  ![alt text][image08]
+
+Distorted Image (straight_lines1.jpg)             |  Undistorted Image (straight_lines1.jpg)
+:-------------------------:|:-------------------------:
+![alt text][image09]  |  ![alt text][image10]
 
 #### 2. Describe how (and identify where in your code) you used color transforms, gradients or other methods to create a thresholded binary image.  Provide an example of a binary image result.
 
-I used a combination of color and gradient thresholds to generate a binary image (thresholding steps at lines # through # in `another_file.py`).  Here's an example of my output for this step.  (note: this is not actually from one of the test images)
+I have created a image_thresholder.py file in my image_utils project to perform color transforms and gradient transforms.
+I tried several color transform and gradient techniques.
 
-![alt text][image3]
+Original images:
+
+|test1.jpg | test4.jpg | straight_lines.jpg |
+|:-------------------------:|:-------------------------:|:-------------------------:|
+|![alt text][image06]  |  ![alt text][image08]  |  ![alt text][image10]|
+
+Here are a list of color channels / gradients I tried:
+1) Grayscale
+
+|test1.jpg | test4.jpg | straight_lines.jpg |
+|:-------------------------:|:-------------------------:|:-------------------------:|
+|![alt text][image11_gray_test1]  |  ![alt text][image12_gray_test4]  |  ![alt text][image13_gray_straight_lines1]|
+
+2) Sobel X
+
+|test1.jpg | test4.jpg | straight_lines.jpg |
+|:-------------------------:|:-------------------------:|:-------------------------:|
+|![alt text][image14_sobelx_test1]  |  ![alt text][image15_sobelx_test4]  |  ![alt text][image16_sobelx_straight_lines1]|
+
+3) Red Color channel 
+4) S Color channel (in HLS color space)
+5) L Color channel (in HLS color space)
+6) a combined 
 
 #### 3. Describe how (and identify where in your code) you performed a perspective transform and provide an example of a transformed image.
 
 The code for my perspective transform includes a function called `warper()`, which appears in lines 1 through 8 in the file `example.py` (output_images/examples/example.py) (or, for example, in the 3rd code cell of the IPython notebook).  The `warper()` function takes as inputs an image (`img`), as well as source (`src`) and destination (`dst`) points.  I chose the hardcode the source and destination points in the following manner:
 
-```python
+```
 src = np.float32(
     [[(img_size[0] / 2) - 55, img_size[1] / 2 + 100],
     [((img_size[0] / 6) - 10), img_size[1]],
