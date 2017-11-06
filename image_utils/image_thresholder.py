@@ -63,5 +63,6 @@ def combined_thresh(rgb_img):
     red_binary = red_channel_thresh(rgb_img, thresh_min=200, thresh_max=255)
     s_binary = s_channel_thresh(rgb_img, thresh_min=110, thresh_max=255)
     l_binary = l_channel_thresh(rgb_img, thresh_min=110, thresh_max=255)
+    gray_binary = gray_binary_thresh(rgb_img, thresh_min=200, thresh_max=255)
 
-    return s_binary & red_binary & l_binary
+    return s_binary | red_binary | l_binary | gray_binary
