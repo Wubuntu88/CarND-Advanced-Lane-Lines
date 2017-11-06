@@ -29,13 +29,26 @@ The goals / steps of this project are the following:
 [image08]: ./output_images/0_undistorted_images/test4.png
 [image09]: ./test_images/straight_lines1.jpg
 [image10]: ./output_images/0_undistorted_images/straight_lines1.png
+
 [image11_gray_test1]: ./output_images/1_threshold_images/grayscale_images/test1.png
 [image12_gray_test4]: ./output_images/1_threshold_images/grayscale_images/test4.png
 [image13_gray_straight_lines1]: ./output_images/1_threshold_images/grayscale_images/straight_lines1.png
+
 [image14_sobelx_test1]: ./output_images/1_threshold_images/sobel_x_gray/test1.png
 [image15_sobelx_test4]: ./output_images/1_threshold_images/sobel_x_gray/test1.png
 [image16_sobelx_straight_lines1]: ./output_images/1_threshold_images/sobel_x_gray/straight_lines1.png
 
+[image17_red_test1]: ./output_images/1_threshold_images/r_channel_images/test1.png
+[image18_red_test4]: ./output_images/1_threshold_images/r_channel_images/test4.png
+[image19_red_straight_lines1]: ./output_images/1_threshold_images/r_channel_images/straight_lines1.png
+
+[image20_s_test1]: ./output_images/1_threshold_images/s_channel_images/test1.png
+[image21_s_test4]: ./output_images/1_threshold_images/s_channel_images/test4.png
+[image22_s_straight_lines1]: ./output_images/1_threshold_images/s_channel_images/straight_lines1.png
+
+[image23_l_test1]: ./output_images/1_threshold_images/l_channel_images/test1.png
+[image24_l_test4]: ./output_images/1_threshold_images/l_channel_images/test4.png
+[image25_l_straight_lines1]: ./output_images/1_threshold_images/l_channel_images/straight_lines1.png
 
 ## [Rubric](https://review.udacity.com/#!/rubrics/571/view) Points
 
@@ -163,17 +176,17 @@ In the begining of my pipeline, I undistort and image.
 Throughout the pipeline description, I will be using the test1.jpg, test4.jpg, and straight_lines1.jpg images.
 Here is an example of it being undistorted: (same as above)
 ##### Source File: output_images/0_undistorted_images/test1.png
-Distorted Image (test1.jpg)             |  Undistorted Image (test1.jpg)
-:-------------------------:|:-------------------------:
-![alt text][image05]  |  ![alt text][image06]
+Distorted Image (test1.jpg)             |  Undistorted Image (test1.jpg)|
+:-------------------------:|:-------------------------:|
+![alt text][image05]  |  ![alt text][image06]|
 
-Distorted Image (test4.jpg)             |  Undistorted Image (test4.jpg)
-:-------------------------:|:-------------------------:
-![alt text][image07]  |  ![alt text][image08]
+Distorted Image (test4.jpg)             |  Undistorted Image (test4.jpg)|
+:-------------------------:|:-------------------------:|
+![alt text][image07]  |  ![alt text][image08]|
 
-Distorted Image (straight_lines1.jpg)             |  Undistorted Image (straight_lines1.jpg)
-:-------------------------:|:-------------------------:
-![alt text][image09]  |  ![alt text][image10]
+Distorted Image (straight_lines1.jpg)             |  Undistorted Image (straight_lines1.jpg)|
+:-------------------------:|:-------------------------:|
+![alt text][image09]  |  ![alt text][image10]|
 
 #### 2. Describe how (and identify where in your code) you used color transforms, gradients or other methods to create a thresholded binary image.  Provide an example of a binary image result.
 
@@ -187,24 +200,103 @@ Original images:
 |![alt text][image06]  |  ![alt text][image08]  |  ![alt text][image10]|
 
 Here are a list of color channels / gradients I tried:
-1) Grayscale
+#### 1) Grayscale
 
-|Orig test1.jpg | Grayscale test1.jpg |
+|Original test1.jpg | Grayscale test1.jpg |
 |:-------------------------:|:-------------------------:|
 |![alt text][image06] | ![alt text][image11_gray_test1]|
+|Original test4.jpg | Grayscale test4.jpg |
 |![alt text][image08] | ![alt text][image12_gray_test4]|
+|Original straight_lines1.jpg | Grayscale straight_lines1.jpg |
 |![alt text][image10] | ![alt text][image13_gray_straight_lines1]|
 
-2) Sobel X
+#### 2) Sobel X
 
-|test1.jpg | test4.jpg | straight_lines.jpg |
+|Original test1.jpg | Sobel X test1.jpg |
+|:-------------------------:|:-------------------------:|
+|![alt text][image06] | ![alt text][image14_sobelx_test1]|
+|Original test4.jpg | Sobel X test4.jpg |
+|![alt text][image08] | ![alt text][image15_sobelx_test4]|
+|Original straight_lines1.jpg | Sobel X straight_lines1.jpg |
+|![alt text][image10] | ![alt text][image16_sobelx_straight_lines1]|
+
+#### 3) Red Color channel 
+
+|Original test1.jpg | Red Channel test1.jpg |
+|:-------------------------:|:-------------------------:|
+|![alt text][image06] | ![alt text][image17_red_test1]|
+|Original test4.jpg | Red Channel test4.jpg |
+|![alt text][image08] | ![alt text][image18_red_test4]|
+|Original straight_lines1.jpg | Red Channel straight_lines1.jpg |
+|![alt text][image10] | ![alt text][image19_red_straight_lines1]|
+
+#### 4) S Color channel (in HLS color space)
+
+|Original test1.jpg | S Channel test1.jpg |
+|:-------------------------:|:-------------------------:|
+|![alt text][image06] | ![alt text][image20_s_test1]|
+|Original test4.jpg | S Channel test4.jpg |
+|![alt text][image08] | ![alt text][image21_s_test4]|
+|Original straight_lines1.jpg | S Channel straight_lines1.jpg |
+|![alt text][image10] | ![alt text][image22_s_straight_lines1]|
+
+#### 5) L Color channel (in HLS color space)
+
+|Original test1.jpg | S Channel test1.jpg |
+|:-------------------------:|:-------------------------:|
+|![alt text][image06] | ![alt text][image23_l_test1]|
+|Original test4.jpg | S Channel test4.jpg |
+|![alt text][image08] | ![alt text][image24_l_test4]|
+|Original straight_lines1.jpg | S Channel straight_lines1.jpg |
+|![alt text][image10] | ![alt text][image25_l_straight_lines1]|
+
+#### 6) a combined
+
+
+#### Color channels compared accross images
+
+### test1.jpg
+|test1.jpg | Grayscale test1.jpg | Sobel X Channel test1.jpg |
 |:-------------------------:|:-------------------------:|:-------------------------:|
-|![alt text][image14_sobelx_test1]  |  ![alt text][image15_sobelx_test4]  |  ![alt text][image16_sobelx_straight_lines1]|
+|![alt text][image06]  |  ![alt text][image11_gray_test1]  | ![alt text][image14_sobelx_test1] |
+| Red Channel test1.jpg | S Channel test1.jpg | L Channel test1.jpg |
+| ![alt text][image17_red_test1]| ![alt text][image20_s_test1] | ![alt text][image25_l_straight_lines1]|
 
-3) Red Color channel 
-4) S Color channel (in HLS color space)
-5) L Color channel (in HLS color space)
-6) a combined 
+### test4.jpg
+|test4.jpg | Grayscale test4.jpg | Sobel X Channel test4.jpg |
+|:-------------------------:|:-------------------------:|:-------------------------:|
+|![alt text][image08]  |  ![alt text][image12_gray_test4]  | ![alt text][image15_sobelx_test4] |
+| Red Channel test4.jpg | S Channel test4.jpg | L Channel test4.jpg |
+| ![alt text][image18_red_test4]| ![alt text][image21_s_test4] | ![alt text][image24_l_test4]|
+
+### straight_lines1.jpg
+|straight_lines1.jpg | Grayscale straight_lines1.jpg | Sobel X Channel straight_lines1.jpg |
+|:-------------------------:|:-------------------------:|:-------------------------:|
+|![alt text][image10]  |  ![alt text][image13_gray_straight_lines1]  | ![alt text][image16_sobelx_straight_lines1] |
+| Red Channel straight_lines1.jpg | S Channel straight_lines1.jpg | L Channel straight_lines1.jpg |
+| ![alt text][image19_red_straight_lines1]| ![alt text][image22_s_straight_lines1] | ![alt text][image25_l_straight_lines1]|
+
+
+[image11_gray_test1]: ./output_images/1_threshold_images/grayscale_images/test1.png
+[image12_gray_test4]: ./output_images/1_threshold_images/grayscale_images/test4.png
+[image13_gray_straight_lines1]: ./output_images/1_threshold_images/grayscale_images/straight_lines1.png
+
+[image14_sobelx_test1]: ./output_images/1_threshold_images/sobel_x_gray/test1.png
+[image15_sobelx_test4]: ./output_images/1_threshold_images/sobel_x_gray/test1.png
+[image16_sobelx_straight_lines1]: ./output_images/1_threshold_images/sobel_x_gray/straight_lines1.png
+
+[image17_red_test1]: ./output_images/1_threshold_images/r_channel_images/test1.png
+[image18_red_test4]: ./output_images/1_threshold_images/r_channel_images/test4.png
+[image19_red_straight_lines1]: ./output_images/1_threshold_images/r_channel_images/straight_lines1.png
+
+[image20_s_test1]: ./output_images/1_threshold_images/s_channel_images/test1.png
+[image21_s_test4]: ./output_images/1_threshold_images/s_channel_images/test4.png
+[image22_s_straight_lines1]: ./output_images/1_threshold_images/s_channel_images/straight_lines1.png
+
+[image20_s_test1]: ./output_images/1_threshold_images/l_channel_images/test1.png
+[image24_l_test4]: ./output_images/1_threshold_images/l_channel_images/test4.png
+[image25_l_straight_lines1]: ./output_images/1_threshold_images/l_channel_images/straight_lines1.png
+
 
 #### 3. Describe how (and identify where in your code) you performed a perspective transform and provide an example of a transformed image.
 
