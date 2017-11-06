@@ -189,9 +189,11 @@ Original images:
 Here are a list of color channels / gradients I tried:
 1) Grayscale
 
-|test1.jpg | test4.jpg | straight_lines.jpg |
-|:-------------------------:|:-------------------------:|:-------------------------:|
-|![alt text][image11_gray_test1]  |  ![alt text][image12_gray_test4]  |  ![alt text][image13_gray_straight_lines1]|
+|Orig test1.jpg | Grayscale test1.jpg |
+|:-------------------------:|:-------------------------:|
+|![alt text][image06] | ![alt text][image11_gray_test1]|
+|![alt text][image08] | ![alt text][image12_gray_test4]|
+|![alt text][image10] | ![alt text][image13_gray_straight_lines1]|
 
 2) Sobel X
 
