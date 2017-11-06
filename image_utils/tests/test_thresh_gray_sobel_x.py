@@ -2,7 +2,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import cv2
 
-import image_thresholding.image_thresholder as it
+import image_utils.image_thresholder as it
 
 mtx = np.load('../camera_calibration/saved_data_to_calibrate_images/mtx.npy')
 dist = np.load('../camera_calibration/saved_data_to_calibrate_images/dist.npy')
@@ -13,8 +13,10 @@ rgb_image = cv2.cvtColor(bgr_image, cv2.COLOR_BGR2RGB)
 
 undistorted_image = cv2.undistort(rgb_image, mtx, dist, None, mtx)
 
-binary_img = it.red_channel_thresh(rgb_img=undistorted_image, thresh_min=200, thresh_max=255)
+kernel = 9
 
-plt.title('red channel grayscale image', fontsize=20)
+binary_img = it.sobel_gray_thresh(rgb_img=undistorted_image, sobel_kernel=kernel, thresh_min=10, thresh_max=100)
+
+plt.title('Sobel x binary image; kernel={}'.format(kernel), fontsize=20)
 plt.imshow(binary_img, cmap='gray')
 plt.show()
