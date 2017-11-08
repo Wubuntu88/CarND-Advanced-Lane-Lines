@@ -30,7 +30,7 @@ print(left_poly)
 print(right_poly)
 
 # Generate x and y values for plotting
-ploty = np.linspace(0, new_img.shape[0]-1, new_img.shape[0] )
+ploty = np.linspace(0, new_img.shape[0]-1, new_img.shape[0])
 left_fitx = left_poly[0]*ploty**2 + left_poly[1]*ploty + left_poly[2]
 right_fitx = right_poly[0]*ploty**2 + right_poly[1]*ploty + right_poly[2]
 

@@ -25,5 +25,5 @@ new_img = img_proc.process_image(rgb_image=image)
 
 plt.title('Perspective transform with S, R, and L channels and region masking\nfilename: {}'.format(file_name), fontsize=16)
 plt.imshow(new_img, cmap='gray')
-# plt.show()
-# plt.savefig('../../images/4_perspec_trans_rgb/' + file_name.split('.')[0] + '.png')
+plt.show()
+#plt.savefig('../../images/4_perspec_trans_rgb/' + file_name.split('.')[0] + '.png')
