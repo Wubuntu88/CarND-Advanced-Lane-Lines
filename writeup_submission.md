@@ -35,7 +35,7 @@ The goals / steps of this project are the following:
 [image13_gray_straight_lines1]: ./output_images/1_threshold_images/grayscale_images/straight_lines1.png
 
 [image14_sobelx_test1]: ./output_images/1_threshold_images/sobel_x_gray/test1.png
-[image15_sobelx_test4]: ./output_images/1_threshold_images/sobel_x_gray/test1.png
+[image15_sobelx_test4]: ./output_images/1_threshold_images/sobel_x_gray/test4.png
 [image16_sobelx_straight_lines1]: ./output_images/1_threshold_images/sobel_x_gray/straight_lines1.png
 
 [image17_red_test1]: ./output_images/1_threshold_images/r_channel_images/test1.png
@@ -174,7 +174,7 @@ Distorted Image (test1.jpg)             |  Undistorted Image
 
 In the begining of my pipeline, I undistort and image.  
 Throughout the pipeline description, I will be using the test1.jpg, test4.jpg, and straight_lines1.jpg images.
-Here is an example of it being undistorted: (same as above)
+Here is an example of it being undistorted:
 ##### Source File: output_images/0_undistorted_images/test1.png
 Distorted Image (test1.jpg)             |  Undistorted Image (test1.jpg)|
 :-------------------------:|:-------------------------:|
@@ -191,7 +191,16 @@ Distorted Image (straight_lines1.jpg)             |  Undistorted Image (straight
 #### 2. Describe how (and identify where in your code) you used color transforms, gradients or other methods to create a thresholded binary image.  Provide an example of a binary image result.
 
 I have created a image_thresholder.py file in my image_utils project to perform color transforms and gradient transforms.
-I tried several color transform and gradient techniques.
+I tried several color transform and gradient techniques:
+* Grayscale
+* Sobel X
+* Red Color Channel
+* S Color Channel (HLS color space)
+* L Color Channel (HLS color space)
+I have also tried the following combinations of color spaces:
+('&' represents a bitwise and; '|' represents a bitwise or; G represents grayscale)
+* S & L & R
+* (S & R) | (L & G)
 
 Original images:
 
@@ -250,7 +259,9 @@ Here are a list of color channels / gradients I tried:
 |Original straight_lines1.jpg | S Channel straight_lines1.jpg |
 |![alt text][image10] | ![alt text][image25_l_straight_lines1]|
 
-#### 6) a combined
+#### 6) Combined Color Thresholds
+
+Make some images of slr and (s&r)|(l&g)
 
 
 #### Color channels compared accross images
@@ -260,7 +271,7 @@ Here are a list of color channels / gradients I tried:
 |:-------------------------:|:-------------------------:|:-------------------------:|
 |![alt text][image06]  |  ![alt text][image11_gray_test1]  | ![alt text][image14_sobelx_test1] |
 | Red Channel test1.jpg | S Channel test1.jpg | L Channel test1.jpg |
-| ![alt text][image17_red_test1]| ![alt text][image20_s_test1] | ![alt text][image25_l_straight_lines1]|
+| ![alt text][image17_red_test1]| ![alt text][image20_s_test1] | ![alt text][image23_l_test1]|
 
 ### test4.jpg
 |test4.jpg | Grayscale test4.jpg | Sobel X Channel test4.jpg |
@@ -276,26 +287,18 @@ Here are a list of color channels / gradients I tried:
 | Red Channel straight_lines1.jpg | S Channel straight_lines1.jpg | L Channel straight_lines1.jpg |
 | ![alt text][image19_red_straight_lines1]| ![alt text][image22_s_straight_lines1] | ![alt text][image25_l_straight_lines1]|
 
+## Combined Colors
+Each of the color channels has something to contribute and excels in some perspective.
 
-[image11_gray_test1]: ./output_images/1_threshold_images/grayscale_images/test1.png
-[image12_gray_test4]: ./output_images/1_threshold_images/grayscale_images/test4.png
-[image13_gray_straight_lines1]: ./output_images/1_threshold_images/grayscale_images/straight_lines1.png
+The gray color channel excels at capturing the white lane lines, and even captures the yellow lines in ideal conditions (test1.jpg, test4.jpg, straight_lines1.jpg).
+It also is moderately robust at picking up the lane lines on a bright pavement, with is a plus (test1.jpg, test4.jpg).
+However, the points that it picks up can make the lane line seem faint (straight_lines1.jpg), 
+and substantial noise can also be picked up (test1.jpg, test4.jpg), degrading the lane line representation.
 
-[image14_sobelx_test1]: ./output_images/1_threshold_images/sobel_x_gray/test1.png
-[image15_sobelx_test4]: ./output_images/1_threshold_images/sobel_x_gray/test1.png
-[image16_sobelx_straight_lines1]: ./output_images/1_threshold_images/sobel_x_gray/straight_lines1.png
+The L color channel does a phenomenal job picking up white and yellow lines on dark pavement (straight_lines1.jpg).
+But when there is bright pavement, the L color channel picks up the entire pavement.
 
-[image17_red_test1]: ./output_images/1_threshold_images/r_channel_images/test1.png
-[image18_red_test4]: ./output_images/1_threshold_images/r_channel_images/test4.png
-[image19_red_straight_lines1]: ./output_images/1_threshold_images/r_channel_images/straight_lines1.png
 
-[image20_s_test1]: ./output_images/1_threshold_images/s_channel_images/test1.png
-[image21_s_test4]: ./output_images/1_threshold_images/s_channel_images/test4.png
-[image22_s_straight_lines1]: ./output_images/1_threshold_images/s_channel_images/straight_lines1.png
-
-[image20_s_test1]: ./output_images/1_threshold_images/l_channel_images/test1.png
-[image24_l_test4]: ./output_images/1_threshold_images/l_channel_images/test4.png
-[image25_l_straight_lines1]: ./output_images/1_threshold_images/l_channel_images/straight_lines1.png
 
 
 #### 3. Describe how (and identify where in your code) you performed a perspective transform and provide an example of a transformed image.
