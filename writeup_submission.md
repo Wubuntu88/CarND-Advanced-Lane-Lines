@@ -50,6 +50,10 @@ The goals / steps of this project are the following:
 [image24_l_test4]: ./output_images/1_threshold_images/l_channel_images/test4.png
 [image25_l_straight_lines1]: ./output_images/1_threshold_images/l_channel_images/straight_lines1.png
 
+[image26_srl_test1]: ./output_images/1_threshold_images/combined_thresholds/srl_images/srl_test1.png
+[image27_srl_test4]: ./output_images/1_threshold_images/combined_thresholds/srl_images/srl_test4.png
+[image28_srl_straight_lines1]: ./output_images/1_threshold_images/combined_thresholds/srl_images/srl_straight_lines1.png
+
 ## [Rubric](https://review.udacity.com/#!/rubrics/571/view) Points
 
 ### Here I will consider the rubric points individually and describe how I addressed each point in my implementation.  
@@ -296,10 +300,61 @@ However, the points that it picks up can make the lane line seem faint (straight
 and substantial noise can also be picked up (test1.jpg, test4.jpg), degrading the lane line representation.
 
 The L color channel does a phenomenal job picking up white and yellow lines on dark pavement (straight_lines1.jpg).
-But when there is bright pavement, the L color channel picks up the entire pavement.
+But when there is bright pavement, the L color channel picks up the entire pavement (test1.jpg, test4.jpg).
+This causes the L channel to become almost useless when there is bright pavement.
 
+The red channel does a great job of picking up white and yellow lane lines on both dark and bright pavements.
+It is also more robust to shadows on dark pavement (test4.jpg)
+One problem with the red channels is that in addition to picking up the lane lines on bright pavement, 
+it also picks up substantial noise from the bright pavement.
+This adds large blobs of white around the detected lane lines in images test1.jpg and test4.jpg.
 
+The S channel is the most robust channel.  
+It does a great job at picking up yellow lane lines, and a good job of picking up white lines (all images).
+It does this well on both bright pavement and dark pavement.  It also generates little noise on the pavement (all images).
+The S channel does have some shortcommings, though.  
+The white lane lines it picks up are faint, and not as good as the red or L channel (all images).
+Also, it picks up shadows on dark pavement (test4.jpg)
 
+#### Combining thresholds
+I combined thresholds in two different ways:
+* S & L & R
+* (S & R) | (L & G)
+
+I discuss the decisions for combining these thresholds and display the outputs of these thresholds.
+
+##### S & L & R
+I chose to bitwise these color channels because they seemed to be good color channels.
+However, this approach mostly uses the S channel for good output.  
+Anding the S with L and R mostly just eliminates some noise when there is a shadow on dark pavement.
+Here are examples of the S & L & R combined channels.
+
+|Original test1.jpg | S & L & R Channels test1.jpg |
+|:-------------------------:|:-------------------------:|
+|![alt text][image06] | ![alt text][image26_srl_test1]|
+
+|Original test4.jpg | S & L & R Channels test4.jpg |
+|:-------------------------:|:-------------------------:|
+|![alt text][image08] | ![alt text][image27_srl_test4]|
+
+|Original straight_lines1.jpg | S & L & R Channels straight_lines1.jpg |
+|:-------------------------:|:-------------------------:|
+|![alt text][image10] | ![alt text][image28_srl_straight_lines1]|
+
+##### (S & R) | (L & G)
+
+I ultimately wanted a result that had the robustness of the S channel while eliminating the faintness of the white lines in S, and removing the shadow issues from the S channel.
+I chose to bitwise and the L and G channels together because it would capture good white lane information.
+It would also eliminate the L channel picking up the hood of the car, because the gray channel does not pick up the hood.
+
+In cases where there is a bright pavement, the L channel picks up the entire pavement, 
+but the gray channel only picks up the white lines, so it is the same as having just the gray channel.
+
+So, the benefit of bitwise anding the L and G channels is to remove some negative elements of the L channel (hood of car),
+and potentially eliminate the noisyness and inconsistency of the gray channel.
+Although bitwise anding these may cause a fainter line because the gray is fainter than the L.
+
+Talk more about the S & R anding.......
 
 #### 3. Describe how (and identify where in your code) you performed a perspective transform and provide an example of a transformed image.
 
