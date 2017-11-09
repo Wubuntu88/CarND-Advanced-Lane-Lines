@@ -28,9 +28,9 @@ class ImageProcessor:
                                               None, self.calibration_matrix)
         binary_img = it.combined_thresh(rgb_img=undistorted_rgb_image)
         region_masked_image = rm.make_region_of_interest(gray_image=binary_img)
-        warped_image, M, Minv = pt.make_perpective_transform(gray_image=region_masked_image,
-                                                             src_pts=self.source_points,
-                                                             dst_pts=self.destination_points)
+        warped_image, M, Minv = pt.make_perspective_transform(gray_image=region_masked_image,
+                                                              src_pts=self.source_points,
+                                                              dst_pts=self.destination_points)
         pf.find_polynomials(grayscale_frame=warped_image, left_line=self.left_line, right_line=self.right_line)
         color_warped = ImageProcessor.create_color_masked_region_image(warped_grayscale_image=warped_image,
                                                                        left_line=self.left_line,
@@ -46,18 +46,18 @@ class ImageProcessor:
 
         return result_image
 
-    def process_image_make_rgb(self, rgb_image):
-        gray_image = cv2.cvtColor(rgb_image, cv2.COLOR_RGB2GRAY)
-        if self.source_points is None or self.destination_points is None:
-            self.source_points = pt.source_points(gray_image)
-            self.destination_points = pt.destination_points(gray_image)
-        undistorted_rgb_image = cv2.undistort(rgb_image, self.calibration_matrix, self.distortion_coefficients,
-                                              None, self.calibration_matrix)
-        warped_image, M, Minv = pt.make_rgb_perspective_transform(rgb_img=undistorted_rgb_image,
-                                                                  src_pts=self.source_points,
-                                                                  dst_pts=self.destination_points)
-        # unfinished (not needed)
-        return warped_image
+    # def process_image_make_rgb(self, rgb_image):
+    #     gray_image = cv2.cvtColor(rgb_image, cv2.COLOR_RGB2GRAY)
+    #     if self.source_points is None or self.destination_points is None:
+    #         self.source_points = pt.source_points(gray_image)
+    #         self.destination_points = pt.destination_points(gray_image)
+    #     undistorted_rgb_image = cv2.undistort(rgb_image, self.calibration_matrix, self.distortion_coefficients,
+    #                                           None, self.calibration_matrix)
+    #     warped_image, M, Minv = pt.make_rgb_perspective_transform(rgb_img=undistorted_rgb_image,
+    #                                                               src_pts=self.source_points,
+    #                                                               dst_pts=self.destination_points)
+    #     # unfinished (not needed)
+    #     return warped_image
 
     @staticmethod
     def create_color_masked_region_image(warped_grayscale_image, left_line: line.Line, right_line: line.Line):
