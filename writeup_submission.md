@@ -354,7 +354,14 @@ So, the benefit of bitwise anding the L and G channels is to remove some negativ
 and potentially eliminate the noisyness and inconsistency of the gray channel.
 Although bitwise anding these may cause a fainter line because the gray is fainter than the L.
 
-Talk more about the S & R anding.......
+The S channel is very robust at detecting white and yellow lanes, but activates when there is a shadow on a dark pavement (test4.jpg).
+The R channel is also good at detecting white and yellow lanes, but activates when there is bright pavement (test4.jpg).
+By anding these together, we can get rid of the shadow on the S channel, and the noisy bright pavement activation on the red channel.
+Another benefit is that we can get rid of noise the is specific to each image, because from the picture they are noisy in different locations.
+
+At the last step, we can or the two together: (S & R) | (L & G).
+In doing this, we hope the each of the components being ored are free of noise, and that they represent mostly lane lines.
+By oring them, we are taking the traits of each and combining them, so that each part (the (S&R) and the (L&G)) contributes fully.
 
 #### 3. Describe how (and identify where in your code) you performed a perspective transform and provide an example of a transformed image.
 
