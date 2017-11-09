@@ -54,6 +54,16 @@ The goals / steps of this project are the following:
 [image27_srl_test4]: ./output_images/1_threshold_images/combined_thresholds/srl_images/srl_test4.png
 [image28_srl_straight_lines1]: ./output_images/1_threshold_images/combined_thresholds/srl_images/srl_straight_lines1.png
 
+# 29-31 for reg mask
+# 32-34 for reg mask + thresh
+[image35_pt_test1]: ./output_images/4_perspec_trans_rgb/test1.png
+[image36_pt_test4]: ./output_images/4_perspec_trans_rgb/test4.png
+[image37_pt_straight_lines1]: ./output_images/4_perspec_trans_rgb/straight_lines1.png
+
+[image38_pt_test1]: ./output_images/4_perspec_trans_binary/test1.png
+[image39_pt_test4]: ./output_images/4_perspec_trans_binary/test4.png
+[image40_pt_straight_lines1]: ./output_images/4_perspec_trans_binary/straight_lines1.png
+
 ## [Rubric](https://review.udacity.com/#!/rubrics/571/view) Points
 
 ### Here I will consider the rubric points individually and describe how I addressed each point in my implementation.  
@@ -341,7 +351,7 @@ Here are examples of the S & L & R combined channels.
 |:-------------------------:|:-------------------------:|
 |![alt text][image10] | ![alt text][image28_srl_straight_lines1]|
 
-##### (S & R) | (L & G)
+##### (S & R) | (L & G) Benefits
 
 I ultimately wanted a result that had the robustness of the S channel while eliminating the faintness of the white lines in S, and removing the shadow issues from the S channel.
 I chose to bitwise and the L and G channels together because it would capture good white lane information.
@@ -363,35 +373,100 @@ At the last step, we can or the two together: (S & R) | (L & G).
 In doing this, we hope the each of the components being ored are free of noise, and that they represent mostly lane lines.
 By oring them, we are taking the traits of each and combining them, so that each part (the (S&R) and the (L&G)) contributes fully.
 
+There are surely better combinations of channels, but I found this one to be quite robust and it produced good results.
+
 #### 3. Describe how (and identify where in your code) you performed a perspective transform and provide an example of a transformed image.
 
-The code for my perspective transform includes a function called `warper()`, which appears in lines 1 through 8 in the file `example.py` (output_images/examples/example.py) (or, for example, in the 3rd code cell of the IPython notebook).  The `warper()` function takes as inputs an image (`img`), as well as source (`src`) and destination (`dst`) points.  I chose the hardcode the source and destination points in the following manner:
-
+The code for my perspective transform is in the location image_utils/perspective_transformer.py.
+To perform the perspective transform, I define the following source points and destination points as functions that return arrays.
+These functions are in the same file as the perspective transformer code, named 'source_points(gray_image)' and 'destination_points(gray_image)'.
+```pythonstub
+import numpy as np
+def source_points(gray_image):
+    x_size = gray_image.shape[1]
+    y_size = gray_image.shape[0]
+    src = np.array(
+        [
+            [
+                [(x_size / 2) - 55, y_size / 2 + 90],  # top left
+                [((x_size / 6) - 10), y_size],  # bottom left
+                [(x_size * 5 / 6) + 60, y_size],  # bottom right
+                [(x_size / 2 + 55), y_size / 2 + 90]  # top right
+            ]
+        ], dtype=np.int32)
+    return src
+    
+    
+def destination_points(gray_image):
+    x_size = gray_image.shape[1]
+    y_size = gray_image.shape[0]
+    dst = np.array(
+        [
+            [
+                [(x_size / 4), 0],
+                [(x_size / 4), y_size],
+                [(x_size * 3 / 4), y_size],
+                [(x_size * 3 / 4), 0]
+            ]
+        ], dtype=np.int32)
+    return dst
 ```
-src = np.float32(
-    [[(img_size[0] / 2) - 55, img_size[1] / 2 + 100],
-    [((img_size[0] / 6) - 10), img_size[1]],
-    [(img_size[0] * 5 / 6) + 60, img_size[1]],
-    [(img_size[0] / 2 + 55), img_size[1] / 2 + 100]])
-dst = np.float32(
-    [[(img_size[0] / 4), 0],
-    [(img_size[0] / 4), img_size[1]],
-    [(img_size[0] * 3 / 4), img_size[1]],
-    [(img_size[0] * 3 / 4), 0]])
+The functions above create the following points.
+The source points are nearly identical to the source points defined in the writeup template.
+However, I modified the y values of the top right and top left so that it would capture farther away parts of the road.
+
+| Source        | Destination   | Position       |
+|:-------------:|:-------------:| :-------------:|
+| 585, 450      | 320, 0        | Top Left       |
+| 203, 720      | 320, 720      | Bottom Left    |
+| 1126, 720     | 960, 720      | Bottom Right   |
+| 695, 450      | 960, 0        | Top Right      |
+
+Here is the function that performs the transform:
+
+```python
+import numpy as np
+import cv2
+def make_perpective_transform(gray_image, src_pts, dst_pts):
+    src_pts = np.float32(src_pts[0])
+    dst_pts = np.float32(dst_pts[0])
+    M = cv2.getPerspectiveTransform(src=src_pts, dst=dst_pts)
+    # swap src and dst points to get the inverse M
+    Minv = cv2.getPerspectiveTransform(src=dst_pts, dst=src_pts)
+    img_size = (gray_image.shape[1], gray_image.shape[0])
+    warped_image = cv2.warpPerspective(gray_image, M, img_size)
+    return warped_image, M, Minv
 ```
 
-This resulted in the following source and destination points:
+I utilize this transform in my pipeline module in the image_processor.py file.
 
-| Source        | Destination   | 
-|:-------------:|:-------------:| 
-| 585, 460      | 320, 0        | 
-| 203, 720      | 320, 720      |
-| 1127, 720     | 960, 720      |
-| 695, 460      | 960, 0        |
+Here is an example of my perspective transform as rgb images.
 
-I verified that my perspective transform was working as expected by drawing the `src` and `dst` points onto a test image and its warped counterpart to verify that the lines appear parallel in the warped image.
+| Perspective Transform test1.jpg |
+|:-------------------------:|
+| ![image35_pt_test1]|
 
-![alt text][image4]
+| Perspective Transform test4.jpg |
+|:-------------------------:|
+| ![image36_pt_test4]|
+
+| Perspective Transform straight_lines1.jpg |
+|:-------------------------:|
+| ![image37_pt_straight_lines1]|
+
+Here are examples of the perspective transforms after performing the image thresholding:
+
+| Perspective Transform test1.jpg |
+|:-------------------------:|
+| ![image38_pt_test1]|
+
+| Perspective Transform test4.jpg |
+|:-------------------------:|
+|![image39_pt_test4]|
+
+| Perspective Transform straight_lines1.jpg |
+|:-------------------------:|
+|![image40_pt_straight_lines1]|
 
 #### 4. Describe how (and identify where in your code) you identified lane-line pixels and fit their positions with a polynomial?
 
