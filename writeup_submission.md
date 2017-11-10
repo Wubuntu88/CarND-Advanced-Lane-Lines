@@ -476,11 +476,11 @@ Here are examples of the perspective transforms after performing the image thres
 
 The code that Identifies the lane line pixels, and plots a polynomial to them is the poly_fitter.py file in the image_utils module.
 There are two methods that perform the work:
-## * complex_polyfit(binary_warped)
+##### * complex_polyfit(binary_warped)
 This method is the same method as in the Udacity site's 'Finding the Lines' section online.
 I took their code and repackaged it as a method that I could call from elsewhere.
 
-## * find_polynomials(grayscale_frame, left_line: line.Line, right_line: line.Line)
+##### * find_polynomials(grayscale_frame, left_line: line.Line, right_line: line.Line)
 This is a method that I wrote.  I uses the complex_polyfit(...) method in the find_polynomials(...) method.
 This find_polynomials takes the output of the complex_polyfit method and ascertains if the polynomial is reasonable or not.
 I calculated statistics on how much different the areas of a polynomial was from its previous polynomial.
