@@ -39,10 +39,6 @@ class Line:
             self.index_to_replace = (self.index_to_replace + 1) % self.nframes
 
     def radius_of_curvature(self, y_eval):
-        # Define conversions in x and y from pixels space to meters
-        # ym_per_pix = 30 / 720  # meters per pixel in y dimension
-        # xm_per_pix = 3.7 / 700  # meters per pixel in x dimension
-
         # Fit new polynomials to x,y in world space
         real_space_polynomial = np.polyfit(self.recent_plot_y * Line.Y_METERS_PER_PIXEL, self.recent_x_points * Line.X_METERS_PER_PIXEL, 2)
         # Calculate the new radii of curvature

@@ -68,6 +68,10 @@ The goals / steps of this project are the following:
 [image42_pt_test4]: ./output_images/5_pt_polyfit/test4.png
 [image43_pt_straight_lines1]: ./output_images/5_pt_polyfit/straight_lines1.png
 
+[image44_full_pipeline_test1]: ./output_images/6_full_pipeline/test1.png
+[image45_full_pipeline_test4]: ./output_images/6_full_pipeline/test4.png
+[image46_full_pipeline_straight_lines1]: ./output_images/6_full_pipeline/straight_lines1.png
+
 ## [Rubric](https://review.udacity.com/#!/rubrics/571/view) Points
 
 ### Here I will consider the rubric points individually and describe how I addressed each point in my implementation.  
@@ -508,13 +512,109 @@ Here are some pictures of the polynomials drawn on the perspective transformed b
 
 #### 5. Describe how (and identify where in your code) you calculated the radius of curvature of the lane and the position of the vehicle with respect to center.
 
-I did this in lines # through # in my code in `my_other_file.py`
+I calculated the radii of curvature in the radius_of_curvature(self, y_eval) method in the following location: image_utils/line.py.
+The reason for having it here is because a line object can calculate its own radius of curvature.
+I used the code from the Udacity course in the 'Measuring Curvature section'.
+To see how I use the radius_of_curvature function, check out the draw_radii_of_curvature(self, image) method in the pipeline/image_processor.py file.
+Here is the radius_of_curvature:
+```python
+import numpy as np
+from image_utils.line import *
+def radius_of_curvature(self, y_eval):
+    # Fit new polynomials to x,y in world space
+    real_space_polynomial = np.polyfit(self.recent_plot_y * Line.Y_METERS_PER_PIXEL, self.recent_x_points * Line.X_METERS_PER_PIXEL, 2)
+    # Calculate the new radii of curvature
+    curve_radius = \
+        ((1 + (2 * real_space_polynomial[0] * y_eval * Line.X_METERS_PER_PIXEL + real_space_polynomial[1]) ** 2) ** 1.5) / \
+        np.absolute(2 * real_space_polynomial[0])
+    return curve_radius
+```
+
+To calculate the offset from center, I do the following calculations within the draw_offset_from_center(self, image) method:
+1) Calculate the position of the camera (center of image x)
+2) Calculate the midpoint x value between the lane lines using the f(y) polynomial fits for the bottom y location (where the camera is)
+3) Calculate the pixel offset of the camera center from the midpoint.
+4) Scale the unit from pixels to meters.
+```python
+import numpy as np
+import cv2
+import image_utils.poly_fitter as pf
+def draw_offset_from_center(self, image):
+    bottom_y_pixel = image.shape[0] - 1
+    p1 = pf.project_poly_on_range(polynomial=self.left_line.current_poly, ploty=np.array([bottom_y_pixel]))[0]
+    p2 = pf.project_poly_on_range(polynomial=self.right_line.current_poly, ploty=np.array([bottom_y_pixel]))[0]
+
+    # here is where I calculate the offset
+    camera_position = image.shape[1] / 2 # step 1
+    midpoint_in_pixels = (p1 + p2) / 2.0 # step 2
+    offset_from_center_pixels = abs(midpoint_in_pixels - camera_position) # step 3
+    xm_per_pix = 3.7 / 700  # meters per pixel in x dimension
+    offset_from_center_meters = offset_from_center_pixels * xm_per_pix # step 4
+
+    offset_text = 'Offset from center: {:10.3f} (meters)'.format(offset_from_center_meters)
+
+    cv2.putText(img=image,
+                text=offset_text,
+                org=(30, 60),
+                fontFace=cv2.FONT_HERSHEY_TRIPLEX,
+                fontScale=1,
+                color=(255, 255, 255),
+                lineType=1)
+```
 
 #### 6. Provide an example image of your result plotted back down onto the road such that the lane area is identified clearly.
 
-I implemented this step in lines # through # in my code in `yet_another_file.py` in the function `map_lane()`.  Here is an example of my result on a test image:
+The entire pipeline of my project is put into one method: process_image(self, rgb_image), located here: pipeline/image_processor.py
+Here is the process_image(self, rgb_image) method:
+```python
+from pipeline.image_processor import *
+import image_utils.image_thresholder as it
+import image_utils.region_masker as rm
+import image_utils.perspective_transformer as pt
+import image_utils.poly_fitter as pf
 
-![alt text][image6]
+def process_image(self, rgb_image):
+    gray_image = cv2.cvtColor(rgb_image, cv2.COLOR_RGB2GRAY)
+    if self.source_points is None or self.destination_points is None:
+        self.source_points = pt.source_points(gray_image)
+        self.destination_points = pt.destination_points(gray_image)
+    undistorted_rgb_image = cv2.undistort(rgb_image, self.calibration_matrix, self.distortion_coefficients,
+                                          None, self.calibration_matrix)
+    binary_img = it.combined_thresh(rgb_img=undistorted_rgb_image)
+    region_masked_image = rm.make_region_of_interest(gray_image=binary_img)
+    warped_image, M, Minv = pt.make_perspective_transform(gray_image=region_masked_image,
+                                                          src_pts=self.source_points,
+                                                          dst_pts=self.destination_points)
+    pf.find_polynomials(grayscale_frame=warped_image, left_line=self.left_line, right_line=self.right_line)
+    color_warped = ImageProcessor.create_color_masked_region_image(warped_grayscale_image=warped_image,
+                                                                   left_line=self.left_line,
+                                                                   right_line=self.right_line)
+    # Warp the blank back to original image space using inverse perspective matrix (Minv)
+    unwarped_color = cv2.warpPerspective(color_warped, Minv, (color_warped.shape[1], color_warped.shape[0]))
+    # Combine the result with the original image
+    result_image = cv2.addWeighted(undistorted_rgb_image, 1, unwarped_color, 0.3, 0)
+
+    self.draw_radii_of_curvature(image=result_image)
+
+    self.draw_offset_from_center(image=result_image)
+
+    return result_image
+```
+This method performs all of the steps I have mentioned in my writeup.
+
+Here are pictures of the process_image(self, rgb_image) method's output:
+
+| Perspective Transform test1.jpg |
+|:-------------------------:|
+| ![image44_full_pipeline_test1]|
+
+| Perspective Transform test4.jpg |
+|:-------------------------:|
+|![image45_full_pipeline_test4]|
+
+| Perspective Transform straight_lines1.jpg |
+|:-------------------------:|
+|![image46_full_pipeline_straight_lines1]|
 
 ---
 
@@ -522,7 +622,7 @@ I implemented this step in lines # through # in my code in `yet_another_file.py`
 
 #### 1. Provide a link to your final video output.  Your pipeline should perform reasonably well on the entire project video (wobbly lines are ok but no catastrophic failures that would cause the car to drive off the road!).
 
-Here's a [link to my video result](./project_video.mp4)
+Here's a [link to my video result](./output_videos/final_videos(s&r)|(l&g)/project_video_final.mp4)
 
 ---
 

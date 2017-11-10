@@ -1,5 +1,4 @@
 import numpy as np
-import matplotlib.pyplot as plt
 import cv2
 
 import image_utils.image_thresholder as it
@@ -107,12 +106,6 @@ class ImageProcessor:
 
         p1 = pf.project_poly_on_range(polynomial=self.left_line.current_poly, ploty=np.array([bottom_y_pixel]))[0]
         p2 = pf.project_poly_on_range(polynomial=self.right_line.current_poly, ploty=np.array([bottom_y_pixel]))[0]
-
-        camera_position = image.shape[1] / 2
-        midpoint_in_pixels = (p1 + p2) / 2.0
-        offset_from_center_pixels = abs(midpoint_in_pixels - camera_position)
-        xm_per_pix = 3.7 / 700  # meters per pixel in x dimension
-        offset_from_center_meters = offset_from_center_pixels * xm_per_pix
 
         roc_text = 'Radius of Curvature -> Left: {:10.3f}, Right: {:10.3f} (meters)'.format(left_roc, right_roc)
 
