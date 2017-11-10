@@ -64,6 +64,10 @@ The goals / steps of this project are the following:
 [image39_pt_test4]: ./output_images/4_perspec_trans_binary/test4.png
 [image40_pt_straight_lines1]: ./output_images/4_perspec_trans_binary/straight_lines1.png
 
+[image41_pt_test1]: ./output_images/5_pt_polyfit/test1.png
+[image42_pt_test4]: ./output_images/5_pt_polyfit/test4.png
+[image43_pt_straight_lines1]: ./output_images/5_pt_polyfit/straight_lines1.png
+
 ## [Rubric](https://review.udacity.com/#!/rubrics/571/view) Points
 
 ### Here I will consider the rubric points individually and describe how I addressed each point in my implementation.  
@@ -458,6 +462,39 @@ Here are examples of the perspective transforms after performing the image thres
 
 | Perspective Transform test1.jpg |
 |:-------------------------:|
+| ![image41_pt_test1]|
+
+| Perspective Transform test4.jpg |
+|:-------------------------:|
+|![image42_pt_test4]|
+
+| Perspective Transform straight_lines1.jpg |
+|:-------------------------:|
+|![image43_pt_straight_lines1]|
+
+#### 4. Describe how (and identify where in your code) you identified lane-line pixels and fit their positions with a polynomial?
+
+The code that Identifies the lane line pixels, and plots a polynomial to them is the poly_fitter.py file in the image_utils module.
+There are two methods that perform the work:
+## * complex_polyfit(binary_warped)
+This method is the same method as in the Udacity site's 'Finding the Lines' section online.
+I took their code and repackaged it as a method that I could call from elsewhere.
+
+## * find_polynomials(grayscale_frame, left_line: line.Line, right_line: line.Line)
+This is a method that I wrote.  I uses the complex_polyfit(...) method in the find_polynomials(...) method.
+This find_polynomials takes the output of the complex_polyfit method and ascertains if the polynomial is reasonable or not.
+I calculated statistics on how much different the areas of a polynomial was from its previous polynomial.
+The statistics I calculated were the mean, median, and standard deviation with respect to each lane line.
+I saved these statistics in the difference_constants.py file in the image_utils module.
+
+To determine if a polynomial fit was legitimate, it must have had a difference with the previous lane line of no more than the average_difference + 2 * standard_deviation.
+If the lane was determined to be legitimate, it is used as the polynomial.
+If the lane was determined to not be legitimate, the previous polynomials for the past 5 frames were averaged together.
+The averaging technique was averaging the coefficients.
+
+Here are some pictures of the polynomials drawn on the perspective transformed binary images.
+| Perspective Transform test1.jpg |
+|:-------------------------:|
 | ![image38_pt_test1]|
 
 | Perspective Transform test4.jpg |
@@ -467,12 +504,6 @@ Here are examples of the perspective transforms after performing the image thres
 | Perspective Transform straight_lines1.jpg |
 |:-------------------------:|
 |![image40_pt_straight_lines1]|
-
-#### 4. Describe how (and identify where in your code) you identified lane-line pixels and fit their positions with a polynomial?
-
-Then I did some other stuff and fit my lane lines with a 2nd order polynomial kinda like this:
-
-![alt text][image5]
 
 #### 5. Describe how (and identify where in your code) you calculated the radius of curvature of the lane and the position of the vehicle with respect to center.
 
