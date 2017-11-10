@@ -462,15 +462,15 @@ Here are examples of the perspective transforms after performing the image thres
 
 | Perspective Transform test1.jpg |
 |:-------------------------:|
-| ![image41_pt_test1]|
+| ![image38_pt_test1]|
 
 | Perspective Transform test4.jpg |
 |:-------------------------:|
-|![image42_pt_test4]|
+|![image39_pt_test4]|
 
 | Perspective Transform straight_lines1.jpg |
 |:-------------------------:|
-|![image43_pt_straight_lines1]|
+|![image40_pt_straight_lines1]|
 
 #### 4. Describe how (and identify where in your code) you identified lane-line pixels and fit their positions with a polynomial?
 
@@ -495,15 +495,15 @@ The averaging technique was averaging the coefficients.
 Here are some pictures of the polynomials drawn on the perspective transformed binary images.
 | Perspective Transform test1.jpg |
 |:-------------------------:|
-| ![image38_pt_test1]|
+| ![image41_pt_test1]|
 
 | Perspective Transform test4.jpg |
 |:-------------------------:|
-|![image39_pt_test4]|
+|![image42_pt_test4]|
 
 | Perspective Transform straight_lines1.jpg |
 |:-------------------------:|
-|![image40_pt_straight_lines1]|
+|![image43_pt_straight_lines1]|
 
 #### 5. Describe how (and identify where in your code) you calculated the radius of curvature of the lane and the position of the vehicle with respect to center.
 
