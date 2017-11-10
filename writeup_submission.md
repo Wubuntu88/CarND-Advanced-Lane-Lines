@@ -624,10 +624,28 @@ Here are pictures of the process_image(self, rgb_image) method's output:
 
 Here's a [link to my video result](./output_videos/final_videos(s&r)|(l&g)/project_video_final.mp4)
 
+The notebook that produced this file is located here: [link to my note book](./notebooks/video_test.ipynb)
+
 ---
 
 ### Discussion
 
 #### 1. Briefly discuss any problems / issues you faced in your implementation of this project.  Where will your pipeline likely fail?  What could you do to make it more robust?
 
-Here I'll talk about the approach I took, what techniques I used, what worked and why, where the pipeline might fail and how I might improve it if I were going to pursue this project further.  
+Some of the difficulties I was having were related to choosing the right combination of color channels, filtering the bogus / outlier polynomials, and figuring out the destination points for the perspective transform.
+
+I chose the (S & R) | (L & G) combination.  This seems to do fairly well, and is reasonably robust, but it still has problems.
+Sometimes it does not do so well on bright pavement.  Also, it can do poorly on bright pavement with shadows from trees.
+I believe there are better combinations out there.
+Possible improvements could come from either combining the above mentioned channels in different ways, or experimenting with new channels.
+I believe this is the main way I coule make my model more robust.
+
+I feel that my filtering of bogus polynomials is good.  I had some problems early on because I was averaging too often (perhaps on every frame).
+This led to my lines having the look of being delayed, because they had too much past influence.
+In my improved averaging, I only average if a line is determined to be an outlier.
+I think better determining which new polynomial is an outlier can improve the model, or determining a better number of frames to average over.
+
+I overcame the perspective transform by looking at what was already available in the writeup template and modifying it, so I will not focus on that.
+
+There are several cases where my pipeline can fail.  The most obvious one is on bright pavement when there is a shadow.
+Any situation where there is excessive brightness will throw my model off.
