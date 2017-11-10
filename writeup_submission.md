@@ -54,8 +54,10 @@ The goals / steps of this project are the following:
 [image27_srl_test4]: ./output_images/1_threshold_images/combined_thresholds/srl_images/srl_test4.png
 [image28_srl_straight_lines1]: ./output_images/1_threshold_images/combined_thresholds/srl_images/srl_straight_lines1.png
 
-# 29-31 for reg mask
-# 32-34 for reg mask + thresh
+[image29_rm_test1]: ./output_images/2_region_masking/rm_test1.png
+[image30_rm_test4]: ./output_images/2_region_masking/rm_test4.png
+[image31_rm_straight_lines1]: ./output_images/2_region_masking/rm_straight_lines1.png
+
 [image35_pt_test1]: ./output_images/4_perspec_trans_rgb/test1.png
 [image36_pt_test4]: ./output_images/4_perspec_trans_rgb/test4.png
 [image37_pt_straight_lines1]: ./output_images/4_perspec_trans_rgb/straight_lines1.png
@@ -382,6 +384,24 @@ In doing this, we hope the each of the components being ored are free of noise, 
 By oring them, we are taking the traits of each and combining them, so that each part (the (S&R) and the (L&G)) contributes fully.
 
 There are surely better combinations of channels, but I found this one to be quite robust and it produced good results.
+
+##### Region Masking
+I also performed region masking.  The region mask is fairly large, so it can capture both lanes when the car is turning.
+It does a good job of ignoring sections that are clearly irrelevant, but still making sure to capture the lane lines.
+
+Here are several examples of my region thresholding on images:
+
+|Original test1.jpg | Region Masked test1.jpg |
+|:-------------------------:|:-------------------------:|
+|![image06] | ![image29_rm_test1]|
+
+|Original test4.jpg | Region Masked test4.jpg |
+|:-------------------------:|:-------------------------:|
+|![image08] | ![image30_rm_test4]|
+
+|Original straight_lines1.jpg | Region Masked straight_lines1.jpg |
+|:-------------------------:|:-------------------------:|
+|![image10] | ![image31_rm_straight_lines1]|
 
 #### 3. Describe how (and identify where in your code) you performed a perspective transform and provide an example of a transformed image.
 
