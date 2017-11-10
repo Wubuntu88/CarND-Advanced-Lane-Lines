@@ -493,6 +493,7 @@ If the lane was determined to not be legitimate, the previous polynomials for th
 The averaging technique was averaging the coefficients.
 
 Here are some pictures of the polynomials drawn on the perspective transformed binary images.
+
 | Perspective Transform test1.jpg |
 |:-------------------------:|
 | ![image41_pt_test1]|
