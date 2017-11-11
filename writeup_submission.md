@@ -1,4 +1,4 @@
-## Writeup Template
+## Writeup Submission
 
 ### You can use this file as a template for your writeup if you want to submit it as a markdown file, but feel free to use some other method and submit a pdf if you prefer.
 
@@ -86,7 +86,7 @@ This document is the writup submission.
 
 ### Camera Calibration
 
-#### 1. Briefly state how you computed the camera matrix and distortion coefficients. Provide an example of a distortion corrected calibration image.
+#### 0. Briefly state how you computed the camera matrix and distortion coefficients. Provide an example of a distortion corrected calibration image.
 I wrote a program 'calibrator.py' in the camera_calibration folder to calculate the camera matrix and distortion coefficients.
 
 First, I load all filenames for the source directory location: 'camera_calibration/camera_calibration_src_images'
@@ -104,11 +104,12 @@ My process for adding the object and image points was as follows:
 ```
 ret, corners = cv2.findChessboardCorners(image=grayscale_image, patternSize=chessboard_dimensions)
 ```
--Note that ret is a boolean indicating whether corners were successfully found.
+-Note that ret is a boolean variable indicating whether corners were successfully found.
+
 4) If corners were successfully found, I would append the corners to the image_points array
 and append the object point grid to the object points array.  
 
--Note that these parrallel arrays are 'arrays of arrays'.
+-Note that these parallel arrays are 'arrays of arrays'.
 
 -Also note that each element in the object points array is the same object - the 'canonical' grid.
 
@@ -117,7 +118,8 @@ and append the object point grid to the object points array.
 ```
 ret, mtx, dist, rvecs, tvecs = cv2.calibrateCamera(object_points, image_points, grayscale_image.shape[::-1], None, None)
 ```
-Of use were the mtx, and dist variables.  These are the camera matrix and distortion coefficients.
+Of use were the mtx and dist variables.  These are the camera matrix and distortion coefficients.
+
 7) I saved these two numpy arrays using the numpy save function:
 ```
 np.save(file='saved_data_to_calibrate_images/mtx.npy', arr=mtx)
@@ -160,7 +162,7 @@ np.save(file='saved_data_to_calibrate_images/mtx.npy', arr=mtx)
 np.save(file='saved_data_to_calibrate_images/dist.npy', arr=dist)
 ```
 
-To undistort and image, I would use the following procedure:
+To undistort an image, I would use the following procedure:
 1) Load the camera matrix and distortion coefficients.
 2) Load the image and do any color channel swapping if necessary (e.g. bgr -> rgb)
 3) use the ```cv2.undistort(rgb_image, mtx, dist, None, mtx)``` method, which returns the undistorted image.
@@ -196,7 +198,7 @@ Distorted Image (test1.jpg)             |  Undistorted Image
 
 ### Pipeline (single images)
 
-In the begining of my pipeline, I undistort and image.  
+In the begining of my pipeline, I undistort an image.  
 Throughout the pipeline description, I will be using the test1.jpg, test4.jpg, and straight_lines1.jpg images.
 Here is an example of it being undistorted:
 ##### Source File: output_images/0_undistorted_images/test1.png
@@ -221,8 +223,10 @@ I tried several color transform and gradient techniques:
 * Red Color Channel
 * S Color Channel (HLS color space)
 * L Color Channel (HLS color space)
+
 I have also tried the following combinations of color spaces:
-('&' represents a bitwise and; '|' represents a bitwise or; G represents grayscale)
+
+('&' represents a bitwise AND; '|' represents a bitwise OR; G represents grayscale)
 * S & L & R
 * (S & R) | (L & G)
 
@@ -232,7 +236,7 @@ Original images:
 |:-------------------------:|:-------------------------:|:-------------------------:|
 |![alt text][image06]  |  ![alt text][image08]  |  ![alt text][image10]|
 
-Here are a list of color channels / gradients I tried:
+Here are a list of color channels / gradients that I tried:
 #### 1) Grayscale
 
 |Original test1.jpg | Grayscale test1.jpg |
@@ -275,20 +279,20 @@ Here are a list of color channels / gradients I tried:
 
 #### 5) L Color channel (in HLS color space)
 
-|Original test1.jpg | S Channel test1.jpg |
+|Original test1.jpg | L Channel test1.jpg |
 |:-------------------------:|:-------------------------:|
 |![alt text][image06] | ![alt text][image23_l_test1]|
-|Original test4.jpg | S Channel test4.jpg |
+|Original test4.jpg | L Channel test4.jpg |
 |![alt text][image08] | ![alt text][image24_l_test4]|
-|Original straight_lines1.jpg | S Channel straight_lines1.jpg |
+|Original straight_lines1.jpg | L Channel straight_lines1.jpg |
 |![alt text][image10] | ![alt text][image25_l_straight_lines1]|
 
 #### 6) Combined Color Thresholds
 
-Make some images of slr and (s&r)|(l&g)
+Make some images of (S & L & R) and (S & R) | (L & G)
 
 
-#### Color channels compared accross images
+#### Color channels compared across images
 
 ### test1.jpg
 |test1.jpg | Grayscale test1.jpg | Sobel X Channel test1.jpg |
@@ -315,7 +319,7 @@ Make some images of slr and (s&r)|(l&g)
 Each of the color channels has something to contribute and excels in some perspective.
 
 The gray color channel excels at capturing the white lane lines, and even captures the yellow lines in ideal conditions (test1.jpg, test4.jpg, straight_lines1.jpg).
-It also is moderately robust at picking up the lane lines on a bright pavement, with is a plus (test1.jpg, test4.jpg).
+It also is moderately robust at picking up the lane lines on a bright pavement, which is a plus (test1.jpg, test4.jpg).
 However, the points that it picks up can make the lane line seem faint (straight_lines1.jpg), 
 and substantial noise can also be picked up (test1.jpg, test4.jpg), degrading the lane line representation.
 
@@ -344,7 +348,7 @@ I combined thresholds in two different ways:
 I discuss the decisions for combining these thresholds and display the outputs of these thresholds.
 
 ##### S & L & R
-I chose to bitwise these color channels because they seemed to be good color channels.
+I chose to bitwise AND these color channels because they seemed to be good color channels.
 However, this approach mostly uses the S channel for good output.  
 Anding the S with L and R mostly just eliminates some noise when there is a shadow on dark pavement.
 Here are examples of the S & L & R combined channels.
@@ -361,6 +365,8 @@ Here are examples of the S & L & R combined channels.
 |:-------------------------:|:-------------------------:|
 |![alt text][image10] | ![alt text][image28_srl_straight_lines1]|
 
+There are better alternatives to S & L & R, so I explored another channel combination.
+
 ##### (S & R) | (L & G) Benefits
 
 I ultimately wanted a result that had the robustness of the S channel while eliminating the faintness of the white lines in S, and removing the shadow issues from the S channel.
@@ -370,18 +376,18 @@ It would also eliminate the L channel picking up the hood of the car, because th
 In cases where there is a bright pavement, the L channel picks up the entire pavement, 
 but the gray channel only picks up the white lines, so it is the same as having just the gray channel.
 
-So, the benefit of bitwise anding the L and G channels is to remove some negative elements of the L channel (hood of car),
+So, the benefit of bitwise ANDing the L and G channels is to remove some negative elements of the L channel (hood of car),
 and potentially eliminate the noisyness and inconsistency of the gray channel.
-Although bitwise anding these may cause a fainter line because the gray is fainter than the L.
+However, bitwise ANDing these may cause a fainter line because the gray is fainter than the L.
 
 The S channel is very robust at detecting white and yellow lanes, but activates when there is a shadow on a dark pavement (test4.jpg).
 The R channel is also good at detecting white and yellow lanes, but activates when there is bright pavement (test4.jpg).
-By anding these together, we can get rid of the shadow on the S channel, and the noisy bright pavement activation on the red channel.
-Another benefit is that we can get rid of noise the is specific to each image, because from the picture they are noisy in different locations.
+By ANDing these together, we can get rid of the shadow on the S channel, and the noisy bright pavement activation on the red channel.
+Another benefit is that we can get rid of noise that is specific to each image, because from the picture they are noisy in different locations.
 
-At the last step, we can or the two together: (S & R) | (L & G).
-In doing this, we hope the each of the components being ored are free of noise, and that they represent mostly lane lines.
-By oring them, we are taking the traits of each and combining them, so that each part (the (S&R) and the (L&G)) contributes fully.
+At the last step, we can OR the two together: (S & R) | (L & G).
+In doing this, we hope that each of the components being ORed are free of noise, and that they represent mostly lane lines.
+By ORing them, we are taking the traits of each and combining them, so that each part (the (S&R) and the (L&G)) contributes fully.
 
 There are surely better combinations of channels, but I found this one to be quite robust and it produced good results.
 
@@ -408,7 +414,7 @@ Here are several examples of my region thresholding on images:
 The code for my perspective transform is in the location image_utils/perspective_transformer.py.
 To perform the perspective transform, I define the following source points and destination points as functions that return arrays.
 These functions are in the same file as the perspective transformer code, named 'source_points(gray_image)' and 'destination_points(gray_image)'.
-```pythonstub
+```python
 import numpy as np
 def source_points(gray_image):
     x_size = gray_image.shape[1]
@@ -439,9 +445,10 @@ def destination_points(gray_image):
         ], dtype=np.int32)
     return dst
 ```
-The functions above create the following points.
 The source points are nearly identical to the source points defined in the writeup template.
 However, I modified the y values of the top right and top left so that it would capture farther away parts of the road.
+
+The functions above create the following points:
 
 | Source        | Destination   | Position       |
 |:-------------:|:-------------:| :-------------:|
@@ -505,13 +512,13 @@ This method is the same method as in the Udacity site's 'Finding the Lines' sect
 I took their code and repackaged it as a method that I could call from elsewhere.
 
 ##### * find_polynomials(grayscale_frame, left_line: line.Line, right_line: line.Line)
-This is a method that I wrote.  I uses the complex_polyfit(...) method in the find_polynomials(...) method.
+This is a method that I wrote.  It uses the complex_polyfit(...) method in the find_polynomials(...) method.
 This find_polynomials takes the output of the complex_polyfit method and ascertains if the polynomial is reasonable or not.
-I calculated statistics on how much different the areas of a polynomial was from its previous polynomial.
-The statistics I calculated were the mean, median, and standard deviation with respect to each lane line.
+I calculated statistics on how much different an area of a polynomial was from its previous polynomial.
+The statistics I calculated where the mean, median, and standard deviation with respect to each lane line.
 I saved these statistics in the difference_constants.py file in the image_utils module.
 
-To determine if a polynomial fit was legitimate, it must have had a difference with the previous lane line of no more than the average_difference + 2 * standard_deviation.
+To determine whether a polynomial fit was legitimate, it must have had a difference with the previous lane line of no more than the average_difference + 2 * standard_deviation.
 If the lane was determined to be legitimate, it is used as the polynomial.
 If the lane was determined to not be legitimate, the previous polynomials for the past 5 frames were averaged together.
 The averaging technique was averaging the coefficients.
@@ -536,7 +543,7 @@ I calculated the radii of curvature in the radius_of_curvature(self, y_eval) met
 The reason for having it here is because a line object can calculate its own radius of curvature.
 I used the code from the Udacity course in the 'Measuring Curvature section'.
 To see how I use the radius_of_curvature function, check out the draw_radii_of_curvature(self, image) method in the pipeline/image_processor.py file.
-Here is the radius_of_curvature:
+Here is the radius_of_curvature function:
 ```python
 import numpy as np
 from image_utils.line import *
@@ -584,7 +591,8 @@ def draw_offset_from_center(self, image):
 
 #### 6. Provide an example image of your result plotted back down onto the road such that the lane area is identified clearly.
 
-The entire pipeline of my project is put into one method: process_image(self, rgb_image), located here: pipeline/image_processor.py
+The entire pipeline of my project is put into one method: process_image(self, rgb_image), located here: pipeline/image_processor.py.
+
 Here is the process_image(self, rgb_image) method:
 ```python
 from pipeline.image_processor import *
